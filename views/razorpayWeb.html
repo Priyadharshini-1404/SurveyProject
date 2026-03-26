@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Razorpay Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const orderId = urlParams.get("orderId");
+      const amount = urlParams.get("amount");
+
+      const options = {
+        key: "rzp_test_RjXwLId9S2Qsph", // REMEMBER TO ADD YOUR KEY!!
+        amount: amount,
+        currency: "INR",
+        name: "Survey Booking",
+        description: "Advance Payment",
+        order_id: orderId,
+
+        handler: function (response) {
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({
+              status: "success",
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+            })
+          );
+        },
+
+        modal: {
+          ondismiss: function () {
+            window.ReactNativeWebView.postMessage(
+              JSON.stringify({
+                status: "cancelled",
+              })
+            );
+          },
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    </script>
+  </body>
+</html>
